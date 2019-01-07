@@ -1,57 +1,136 @@
 
+import React from 'react';
+import {
+  ActivityIndicator,
+  AsyncStorage,
+  Button,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { createStackNavigator, createSwitchNavigator, createAppContainer, createBottomTabNavigator, createDrawerNavigator } from 'react-navigation';
+// import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, WebView} from 'react-native';
+class SignInScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Please sign in',
+  };
 
-
-export default class App extends Component {
   render() {
     return (
-     
-      
-      <View style={ styles.container }>
-        <Text style={ styles.headerText }>
-          Home
-        </Text>
-        <Text style={styles.textView}>
-          Welcome to Handbook
-        </Text>
-       <Text style={styles.textView}>
-      Takrif
-     </Text>
-     <Text style={styles.textView}>
-     Peraturan Am
-     </Text>
-   </View>
+      <View style={styles.container}>
+        <Button title="Sign in!" onPress={this._signInAsync} />
+      </View>
+    );
+  }
 
-      
+  _signInAsync = async () => {
+    await AsyncStorage.setItem('userToken', 'abc');
+    this.props.navigation.navigate('App');
+  };
+}
+
+class HomeScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Welcome to the Unisel Student',
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <Button title="Show me more of the app" onPress={this._showMoreApp} />
+        <Button title="Actually, sign me out :)" onPress={this._signOutAsync} />
+      </View>
+    );
+  }
+
+  _showMoreApp = () => {
+    this.props.navigation.navigate('Other');
+  };
+
+  _signOutAsync = async () => {
+    await AsyncStorage.clear();
+    this.props.navigation.navigate('Auth');
+  };
+}
+
+class OtherScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Lots of features here',
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <Button title="I'm done, sign me out" onPress={this._signOutAsync} />
+        <StatusBar barStyle="default" />
+      </View>
+    );
+  }
+
+  _signOutAsync = async () => {
+    await AsyncStorage.clear();
+    this.props.navigation.navigate('Auth');
+  };
+}
+
+class AuthLoadingScreen extends React.Component {
+  constructor() {
+    super();
+    this._bootstrapAsync();
+  }
+
+  // Fetch the token from storage then navigate to our appropriate place
+  _bootstrapAsync = async () => {
+    const userToken = await AsyncStorage.getItem('userToken');
+
+    // This will switch to the App screen or Auth screen and this loading
+    // screen will be unmounted and thrown away.
+    this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+  };
+
+  // Render any loading content that you like here
+  render() {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator />
+        <StatusBar barStyle="default" />
+      </View>
     );
   }
 }
 
-
 const styles = StyleSheet.create({
-  
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 12
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-
-  textView: {
-    color: '#fff',
-    padding: 12,
-    backgroundColor: 'blue'
-  },
-
-  
-
-  headerText: {
-    fontSize: 14,
-    padding: 12,
-    color: '#fff',
-    backgroundColor: 'green',
-    marginBottom: 12
-  }
 });
 
+const AppStack = createStackNavigator({ Home: HomeScreen, Other: OtherScreen });
+const AuthStack = createStackNavigator({ SignIn: SignInScreen });
+const TabNavigator = createBottomTabNavigator({
+  Home: HomeScreen,
+  Other: OtherScreen,
+});
+const MyDrawerNavigator = createDrawerNavigator({
+  Home: {
+    screen: HomeScreen,
+  },
+  Notifications: {
+    screen: OtherScreen,
+  },
+});
+
+export default createAppContainer(createSwitchNavigator(
+  {
+    AuthLoading: AuthLoadingScreen,
+    App: MyDrawerNavigator,
+    Auth: AuthStack,
+    
+  },
+  {
+    initialRouteName: 'AuthLoading',
+  }
+));
