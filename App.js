@@ -14,18 +14,21 @@ export default class App extends Component {
           Home
         </Text>
         <Text style={styles.textView}>
-          Welcome to Handbookzvddsfdsfdsfdsfsdfsdgsdjdnvkdsjfndskf
-          fsdklfnsdklfndslkfsdlfkdsnflksdnfds
-          sfksdfnskdjfnsdkjfdsnf
-          fkdsjfbdsjk
+          Welcome to Handbook
         </Text>
-      </View>
-      
+       <Text style={styles.textView}>
+      Takrif
+     </Text>
+     <Text style={styles.textView}>
+     Peraturan Am
+     </Text>
+   </View>
 
       
     );
   }
 }
+
 
 const styles = StyleSheet.create({
   
@@ -38,7 +41,7 @@ const styles = StyleSheet.create({
   textView: {
     color: '#fff',
     padding: 12,
-    backgroundColor: '#000'
+    backgroundColor: 'blue'
   },
 
   
@@ -47,7 +50,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     padding: 12,
     color: '#fff',
-    backgroundColor: 'red',
+    backgroundColor: 'green',
     marginBottom: 12
   }
 });
+
